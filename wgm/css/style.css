@@ -1,0 +1,78 @@
+@charset "utf-8";
+
+*{
+	box-sizing: border-box;
+	position: relative;
+}
+
+html,body{
+	font-family: '微軟正黑體', arial;
+}
+
+h1,h2,h3,h4,h5,h6,p{
+	margin: 0;
+}
+ul{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+a{
+	text-decoration: none;
+	color: #333;
+}
+
+.container
+{
+	/*border: 1px solid #000;*/
+	margin: 0 auto;
+	padding-left: 16px;
+	padding-right: 16px;
+	background-color: #CEC2AD;
+}
+
+.image-container{
+	/*border: 1px solid #000;*/
+	padding-top: 100%;
+	background-image: url('../images/01.png');
+	background-size: cover;
+	background-attachment: fixed;
+}
+@media screen and (max-width: 1920px){
+	.image-container
+	{
+		padding-top: 100%;
+		padding-bottom: 100%;
+	}
+}
+@media screen and (max-width: 768px){
+	.image-container
+	{
+		padding-top: 500px;
+		padding-bottom: 500px;
+	}
+}
+@media screen and (max-width: 430px){
+	.image-container
+	{
+		padding-top: 500px;
+		padding-bottom: 500px;
+	}
+}
+@media screen and (max-width: 400px){
+	.image-container
+	{
+		padding-top: 500px;
+		padding-bottom: 500px;
+	}
+}
+.container .image-container
+{
+	width: 100%;
+	height: 100%;
+	/*border: 1px solid #000;*/
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	margin: 0 auto;
+}
