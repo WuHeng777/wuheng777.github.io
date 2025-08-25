@@ -1,12 +1,326 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PurrGo 測試頁</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PurrGo 喵來速｜初版網頁 App</title>
+  <meta name="description" content="PurrGo 喵來速｜貓砂快取自動販賣機與功能型貓砂品牌的初步網頁 App MVP。" />
+  <meta name="theme-color" content="#ff7f50" />
+  <style>
+    :root{ --brand:#ff7f50; --text:#111; --bg:#fff; --muted:#666; --line:#eee; --radius:14px; --shadow:0 10px 24px rgba(0,0,0,.06) }
+    @media (prefers-color-scheme: dark){ :root{ --text:#eee; --bg:#0b0b0c; --muted:#aaa; --line:#222 } body{ background:#0b0b0c } }
+    *{ box-sizing:border-box } body{ margin:0; font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC",sans-serif; color:var(--text); background:var(--bg) }
+    a{ color:inherit; text-decoration:none } .container{ width:min(1100px,92vw); margin:auto }
+    header{ position:sticky; top:0; z-index:50; backdrop-filter:saturate(180%) blur(10px); background:color-mix(in oklab, var(--bg), transparent 10%); border-bottom:1px solid var(--line) }
+    .nav{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; gap:12px }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.5px }
+    .logo{ width:28px;height:28px; border-radius:8px; background:var(--brand); display:grid; place-items:center; color:#000; font-weight:900 }
+    .tabs{ display:flex; gap:6px; flex-wrap:wrap } .tab{ padding:8px 12px; border:1px solid var(--line); border-radius:999px; font-weight:600 }
+    .tab[aria-current="page"]{ background:var(--brand); border-color:var(--brand); color:#000 }
+    main{ padding:28px 0 80px }
+    .hero{ display:grid; grid-template-columns:1.15fr .85fr; gap:22px; align-items:center; margin:10px 0 28px }
+    @media(max-width:900px){ .hero{ grid-template-columns:1fr } }
+    .card{ background:linear-gradient(180deg, color-mix(in oklab,var(--bg),#fff 6%), color-mix(in oklab,var(--bg),#000 2%)); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px }
+    .btn{ display:inline-grid; place-items:center; height:44px; padding:0 18px; border-radius:12px; font-weight:800; border:1.5px solid #000; background:var(--brand) }
+    .btn.secondary{ background:transparent; border-color:var(--line); color:var(--text) }
+    .grid{ display:grid; gap:16px } .g-3{ grid-template-columns:repeat(3,1fr) } .g-2{ grid-template-columns:repeat(2,1fr) }
+    @media(max-width:900px){ .g-3{ grid-template-columns:1fr } .g-2{ grid-template-columns:1fr } }
+    .kpi{ display:flex; gap:16px; flex-wrap:wrap } .kpi .item{ flex:1 1 160px; border:1px dashed var(--line); border-radius:12px; padding:14px }
+    .muted{ color:var(--muted) } .pill{ display:inline-block; padding:4px 10px; border-radius:999px; background:color-mix(in oklab,var(--brand),#fff 70%); color:#000; font-weight:700; font-size:12px }
+    .list{ margin:0; padding:0; list-style:none; display:grid; gap:8px }
+    .input, select, textarea{ width:100%; height:44px; border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:transparent; color:inherit }
+    textarea{ height:120px; resize:vertical }
+    .inline{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+    .table{ width:100%; border-collapse:collapse; font-size:14px } .table th,.table td{ border-bottom:1px solid var(--line); padding:10px 8px; text-align:left }
+    footer{ border-top:1px solid var(--line); padding:28px 0; color:var(--muted); font-size:14px }
+    .toast{ position:fixed; right:14px; bottom:14px; padding:12px 14px; background:#111; color:#fff; border-radius:12px; opacity:0; transform:translateY(12px); transition:.25s }
+    .toast.show{ opacity:1; transform:translateY(0) } .empty{ text-align:center; padding:22px; border:1px dashed var(--line); border-radius:12px }
+    .demo{ position:fixed; left:10px; bottom:10px; background:#000; color:#fff; padding:6px 10px; border-radius:999px; font-size:12px; opacity:.8 }
+  </style>
 </head>
 <body>
-  <h1>🎉 Hello PurrGo! 網頁成功了！</h1>
-  <p>這是第一版測試網頁。</p>
+  <header>
+    <div class="container nav" role="navigation" aria-label="主導覽">
+      <div class="brand"><div class="logo" aria-hidden="true">🐾</div><div>PurrGo 喵來速</div></div>
+      <nav class="tabs" id="tabs">
+        <a class="tab" href="#/home">首頁</a>
+        <a class="tab" href="#/products">產品</a>
+        <a class="tab" href="#/kiosk">販賣機點位</a>
+        <a class="tab" href="#/survey">用戶問卷</a>
+        <a class="tab" href="#/partners">通路/合作</a>
+        <a class="tab" href="#/admin">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="app" tabindex="-1"></main>
+
+  <footer>
+    <div class="container">
+      <div>© <span id="year"></span> PurrGo 喵來速 ｜品牌主色 #ff7f50</div>
+      <div class="muted">此為 MVP 展示。所有資料為示意，可直接對接 API。</div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="demo">DEMO</div>
+
+  <script>
+  const DB = {
+    products: [
+      { id:"catlite-young", name:"微量元素驅蟲砂｜幼貓", price:399, weight:"2.5kg", badge:"日常補給＋體內外驅蟲", desc:"幼貓專屬配方；含鐵/鋅/銅/錳/碘/硒酵母粉與南瓜籽粉等，安全食品級添加。", stock:120 },
+      { id:"catlite-adult", name:"微量元素驅蟲砂｜成貓", price:429, weight:"2.5kg", badge:"長效抑臭＋健康補給", desc:"成貓日常健康維護；豆腐砂基底與微膠囊包覆技術粉。", stock:86 },
+      { id:"catlite-senior", name:"微量元素驅蟲砂｜熟齡貓", price:459, weight:"2.5kg", badge:"關鍵照護升級", desc:"熟齡配方，減敏溫和；加入洋甘菊、迷迭香與硒酵母粉。", stock:44 }
+    ],
+    kiosks: [
+      { id:"txg-a01", city:"台中", name:"勤美誠品旁快取點", status:"籌備中", eta:"2025-10", features:["24hr","無接觸支付","Line 通知"] },
+      { id:"tpe-a02", city:"台北", name:"大安森林公園站", status:"洽談中", eta:"2026-01", features:["NFC","會員折扣"] }
+    ],
+    partnersTips:[
+      "優先提案 7-ELEVEN / 全家便利商店，建立通路可信度與穩定展點。",
+      "提供『無負擔試點 3-5 台』的回收模型，降低首期導入風險。",
+      "導入補貨監控＋產險/公意險，建立 SOP 與合規。"
+    ]
+  };
+
+  const Cart = {
+    key:"purrgo.cart",
+    get(){ return JSON.parse(localStorage.getItem(this.key)||"[]") },
+    set(v){ localStorage.setItem(this.key, JSON.stringify(v)); },
+    add(item){
+      const cart=this.get();
+      const idx = cart.findIndex(x=>x.id===item.id);
+      if(idx>-1){ cart[idx].qty += item.qty||1; } else { cart.push({ ...item, qty:item.qty||1 }); }
+      this.set(cart); toast("已加入購物車");
+    },
+    clear(){ this.set([]); toast("購物車已清空"); }
+  };
+
+  const $ = (sel, el=document)=> el.querySelector(sel);
+  const $$ = (sel, el=document)=> [...el.querySelectorAll(sel)];
+  const money = n => `NT$ ${n.toLocaleString()}`;
+  const toast = (msg)=>{ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 1600); };
+
+  const routes = { "/home": renderHome, "/products": renderProducts, "/kiosk": renderKiosk, "/survey": renderSurvey, "/partners": renderPartners, "/admin": renderAdmin };
+  function navTo(hash){ location.hash = hash }
+  function currentRoute(){ return location.hash.replace("#","") || "/home" }
+  function setActiveTab(){ const now=currentRoute(); $$("#tabs .tab").forEach(a=>{ a.setAttribute("aria-current", a.getAttribute("href").replace("#","")===now ? "page" : "false"); }) }
+
+  function renderHome(root){
+    root.innerHTML = `
+      <section class="hero">
+        <div class="card">
+          <span class="pill">品牌 MVP</span>
+          <h1 style="margin:.2em 0 .3em; font-size:clamp(28px,3.4vw,44px); line-height:1.15;">
+            貓砂快取自動販賣機 × 功能型貓砂<br/>便利、可愛、潮感的養貓日常
+          </h1>
+          <p class="muted">以點位便利與日常健康補給為核心，PurrGo 喵來速提供 24 小時快取補砂、會員折扣、浪浪公益常態捐助。</p>
+          <div class="inline" style="margin-top:12px">
+            <button class="btn" onclick="navTo('#/products')">立即選購</button>
+            <button class="btn secondary" onclick="navTo('#/kiosk')">查看販賣機點位</button>
+          </div>
+          <div class="kpi" style="margin-top:18px">
+            <div class="item"><div class="muted">預計首批點位</div><div style="font-weight:900;font-size:24px">3–5 台</div></div>
+            <div class="item"><div class="muted">會員平均回購</div><div style="font-weight:900;font-size:24px">28 天</div></div>
+            <div class="item"><div class="muted">公益捐助（目標）</div><div style="font-weight:900;font-size:24px">營收 10%</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">當月主打｜微量元素驅蟲砂</h3>
+          <ul class="list">
+            <li>・安全「寵物食品級」原料，微膠囊包覆技術。</li>
+            <li>・分齡三款（幼貓／成貓／熟齡）精準照護。</li>
+            <li>・抑臭結團、溫和成分、日常補給＋體內外支持。</li>
+          </ul>
+          <div class="inline" style="margin-top:10px">
+            <button class="btn" onclick="navTo('#/products')">看三款差異</button>
+            <a class="btn secondary" href="#/survey">我要參與用戶測試</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid g-3">
+        <div class="card"><h3 style="margin:0 0 6px">便利補砂</h3><p class="muted">販賣機 24hr 快取、支援無接觸支付、App 通知補貨提醒。</p></div>
+        <div class="card"><h3 style="margin:0 0 6px">健康補給</h3><p class="muted">六大微量元素＋天然萃取粉，日常舔毛即可微補給。</p></div>
+        <div class="card"><h3 style="margin:0 0 6px">共好公益</h3><p class="muted">設計「浪浪援助」常態捐助機制，讓每次補砂都更有意義。</p></div>
+      </section>`;
+  }
+
+  function renderProducts(root){
+    const rows = DB.products.map(p=>`
+      <div class="card">
+        <div class="inline" style="justify-content:space-between"><h3 style="margin:0">${p.name}</h3><span class="pill">${p.badge}</span></div>
+        <p class="muted" style="margin:.3em 0">${p.desc}</p>
+        <table class="table">
+          <tr><th>建議售價</th><td>${money(p.price)}</td></tr>
+          <tr><th>淨重</th><td>${p.weight}</td></tr>
+          <tr><th>庫存</th><td>${p.stock} 包</td></tr>
+        </table>
+        <div class="inline" style="margin-top:8px">
+          <label class="muted">數量
+            <select id="qty-${p.id}">${[...Array(10)].map((_,i)=>`<option value="${i+1}">${i+1}</option>`).join("")}</select>
+          </label>
+          <button class="btn" onclick="(function(){ const qty=+document.getElementById('qty-${p.id}').value; Cart.add({ id:'${p.id}', name:'${p.name}', price:${p.price}, qty }); })()">加入購物車</button>
+        </div>
+      </div>`).join("");
+
+    root.innerHTML = `
+      <section class="grid g-3">${rows}</section>
+      <section style="margin-top:18px" class="card">
+        <h3 style="margin-top:0">購物車</h3>
+        <div id="cart"></div>
+        <div class="inline" style="margin-top:10px">
+          <button class="btn secondary" onclick="Cart.clear(); renderProducts(document.getElementById('app'))">清空</button>
+          <button class="btn" onclick="toast('結帳流程：待串接金流 API');">前往結帳</button>
+        </div>
+      </section>`;
+    renderCart();
+  }
+  function renderCart(){
+    const wrap = document.getElementById("cart"); const cart = Cart.get();
+    if(!cart.length){ wrap.innerHTML = `<div class="empty">購物車是空的</div>`; return; }
+    const total = cart.reduce((s,i)=>s + i.price*i.qty, 0);
+    wrap.innerHTML = `
+      <table class="table">
+        <thead><tr><th>品項</th><th>單價</th><th>數量</th><th>小計</th></tr></thead>
+        <tbody>${cart.map(i=>`<tr><td>${i.name}</td><td>${money(i.price)}</td><td>${i.qty}</td><td>${money(i.price*i.qty)}</td></tr>`).join("")}</tbody>
+        <tfoot><tr><th colspan="3" style="text-align:right">合計</th><th>${money(total)}</th></tr></tfoot>
+      </table>`;
+  }
+
+  function renderKiosk(root){
+    root.innerHTML = `
+      <section class="grid g-2">
+        ${DB.kiosks.map(k=>`
+          <div class="card">
+            <div class="inline" style="justify-content:space-between"><h3 style="margin:0">${k.city}・${k.name}</h3><span class="pill">${k.status}</span></div>
+            <p class="muted" style="margin:.2em 0">預計上線：${k.eta}</p>
+            <div class="inline" style="gap:8px; flex-wrap:wrap">${k.features.map(f=>`<span class="pill" style="background:#eee">${f}</span>`).join("")}</div>
+            <div class="inline" style="margin-top:10px">
+              <button class="btn" onclick="openKioskReserve('${k.id}')">想要此點位</button>
+              <button class="btn secondary" onclick="toast('地圖功能：待串接地圖 SDK')">地圖查看</button>
+            </div>
+          </div>`).join("")}
+      </section>`;
+  }
+  function openKioskReserve(kioskId){ const k = DB.kiosks.find(x=>x.id===kioskId); const name = prompt(\`提交 \${k.city}・\${k.name} 的點位建議／需求（留下稱呼）\`); if(name){ toast("已送出需求，小隊會聯繫你"); } }
+
+  function renderSurvey(root){
+    root.innerHTML = `
+      <section class="card">
+        <h2 style="margin-top:0">用戶問卷（MVP）</h2>
+        <form id="surveyForm" onsubmit="return submitSurvey(this)">
+          <div class="grid g-2">
+            <label>稱呼/Name<input class="input" name="name" required maxlength="30" /></label>
+            <label>Email（用於通知與回饋）<input class="input" type="email" name="email" required /></label>
+          </div>
+          <label>城市
+            <select name="city" class="input" required>
+              <option value="">請選擇</option>
+              <option>台北</option><option>新北</option><option>桃園</option>
+              <option>台中</option><option>台南</option><option>高雄</option>
+            </select>
+          </label>
+          <label>你目前使用的貓砂類型
+            <select name="type" class="input" required>
+              <option value="">請選擇</option>
+              <option>豆腐砂</option><option>礦砂</option><option>紙砂</option><option>矽砂</option><option>其他</option>
+            </select>
+          </label>
+          <label>平常幾天補砂一次？<input class="input" name="freq" placeholder="例如：14 天" /></label>
+          <label>其他建議（選填）<textarea name="note" placeholder="告訴我們你最在意的點～"></textarea></label>
+          <div class="inline" style="margin-top:10px">
+            <button class="btn" type="submit">送出</button>
+            <button class="btn secondary" type="reset">清除</button>
+          </div>
+        </form>
+      </section>
+      <section class="card" id="surveyList">
+        <h3 style="margin-top:0">我提交的問卷（僅本機）</h3>
+        <div class="empty">尚無資料</div>
+      </section>`;
+    refreshSurveyList();
+  }
+  function submitSurvey(form){
+    const data = Object.fromEntries(new FormData(form).entries());
+    if(!/^\S+@\S+\.\S+$/.test(data.email)){ toast("Email 格式不正確"); return false; }
+    const key="purrgo.surveys"; const list = JSON.parse(localStorage.getItem(key)||"[]");
+    list.push({ ...data, ts: Date.now() }); localStorage.setItem(key, JSON.stringify(list));
+    form.reset(); toast("已送出，感謝參與！"); refreshSurveyList(); return false;
+  }
+  function refreshSurveyList(){
+    const key="purrgo.surveys"; const list = JSON.parse(localStorage.getItem(key)||"[]").reverse(); const box = document.getElementById("surveyList");
+    if(!list.length){ box.innerHTML = `<h3 style="margin-top:0">我提交的問卷（僅本機）</h3><div class="empty">尚無資料</div>`; return; }
+    box.innerHTML = `
+      <h3 style="margin-top:0">我提交的問卷（僅本機）</h3>
+      <table class="table">
+        <thead><tr><th>時間</th><th>稱呼</th><th>Email</th><th>城市</th><th>類型</th><th>頻率</th><th>備註</th></tr></thead>
+        <tbody>${list.map(x=>`<tr><td>${new Date(x.ts).toLocaleString()}</td><td>${x.name}</td><td>${x.email}</td><td>${x.city}</td><td>${x.type}</td><td>${x.freq||"-"}</td><td>${x.note||"-"}</td></tr>`).join("")}</tbody>
+      </table>`;
+  }
+
+  function renderPartners(root){
+    root.innerHTML = `
+      <section class="grid g-2">
+        <div class="card">
+          <h3 style="margin-top:0">合作提案要點（精簡版）</h3>
+          <ul class="list">${DB.partnersTips.map(t=>`<li>・${t}</li>`).join("")}</ul>
+          <div class="inline" style="margin-top:8px">
+            <button class="btn" onclick="toast('將寄出 Demo Deck：待串接郵件服務')">索取 Demo Deck</button>
+            <button class="btn secondary" onclick="navTo('#/admin')">查看指標</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">合作洽談表單</h3>
+          <form onsubmit="toast('已送出，稍後由專人聯繫'); this.reset(); return false;">
+            <div class="grid g-2">
+              <label>公司/店名<input class="input" required/></label>
+              <label>聯絡人<input class="input" required/></label>
+            </div>
+            <label>Email<input class="input" type="email" required/></label>
+            <label>想合作的城市
+              <select class="input" required>
+                <option value="">請選擇</option><option>台北</option><option>新北</option><option>桃園</option>
+                <option>台中</option><option>台南</option><option>高雄</option>
+              </select>
+            </label>
+            <label>簡述貴方門市/點位條件<textarea placeholder="人流、營業時間、坪數等"></textarea></label>
+            <div class="inline" style="margin-top:8px"><button class="btn" type="submit">送出合作意向</button></div>
+          </form>
+        </div>
+      </section>`;
+  }
+
+  function renderAdmin(root){
+    const cart = Cart.get(); const gm = (cart.reduce((s,i)=>s+i.price*i.qty,0))||0;
+    root.innerHTML = `
+      <section class="card">
+        <h2 style="margin-top:0">營運儀表板（Demo）</h2>
+        <div class="kpi">
+          <div class="item"><div class="muted">今日 GMV（本機）</div><div style="font-weight:900;font-size:24px">${money(gm)}</div></div>
+          <div class="item"><div class="muted">會員數（表單累計）</div><div style="font-weight:900;font-size:24px">${(JSON.parse(localStorage.getItem('purrgo.surveys')||"[]")).length}</div></div>
+          <div class="item"><div class="muted">啟動點位</div><div style="font-weight:900;font-size:24px">${DB.kiosks.length}</div></div>
+        </div>
+        <div class="inline" style="margin-top:12px">
+          <button class="btn" onclick="toast('匯出 CSV：待串接')">匯出報表</button>
+          <button class="btn secondary" onclick="localStorage.clear(); toast('已清空本機資料'); location.reload()">清空本機資料</button>
+        </div>
+      </section>
+      <section class="card">
+        <h3 style="margin-top:0">API 介面定義（預留）</h3>
+        <pre style="white-space:pre-wrap; font-size:13px; line-height:1.4">
+GET  /api/products         // 取得商品清單
+POST /api/cart/checkout    // 結帳（payload: cart, user）
+GET  /api/kiosks           // 取得點位列表
+POST /api/surveys          // 送出問卷
+POST /api/partners         // 合作洽談
+        </pre>
+      </section>`;
+  }
+
+  function render(){ const route=currentRoute(); const view=routes[route]||renderHome; const root=document.getElementById("app"); view(root); setActiveTab(); root.focus({preventScroll:true}); }
+  window.addEventListener("hashchange", render);
+  window.addEventListener("DOMContentLoaded", ()=>{ document.getElementById("year").textContent=new Date().getFullYear(); if(!location.hash) location.hash="#/home"; render(); });
+  </script>
 </body>
 </html>
