@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>PurrGo 喵來速｜初版網頁 App</title>
   <meta name="description" content="PurrGo 喵來速｜貓砂快取自動販賣機與功能型貓砂品牌的初步網頁 App MVP。" />
   <meta name="theme-color" content="#ff7f50" />
@@ -322,5 +325,12 @@ POST /api/partners         // 合作洽談
   window.addEventListener("hashchange", render);
   window.addEventListener("DOMContentLoaded", ()=>{ document.getElementById("year").textContent=new Date().getFullYear(); if(!location.hash) location.hash="#/home"; render(); });
   </script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(console.error);
+    });
+  }
+</script>
 </body>
 </html>
