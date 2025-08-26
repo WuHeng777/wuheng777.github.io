@@ -1,8 +1,15 @@
-const CACHE = 'purrgo-v1';
-const ASSETS = ['/', '/index.html', '/manifest.webmanifest'];
+const CACHE = 'purrgo-v2';
+const ASSETS = [
+  '/', '/index.html', '/manifest.webmanifest',
+  '/logo/logo-192.png', '/logo/logo-512.png', '/logo/favicon.png'
+];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(ASSETS))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (e) => {
