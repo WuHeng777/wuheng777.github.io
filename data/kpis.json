@@ -1,0 +1,12 @@
+{
+  "TAM":"NT$ 26 億（台灣年貓砂市場估）",
+  "conversion":"2.4%（站內訪問→下單意圖）",
+  "repeat_days":"28 天（會員平均回購週期）",
+  "unit_econ":{"capex":"NT$95,000/台","gross_margin":"42%","payback":"11–14 個月"},
+  "milestones":[
+    {"q":"2025 Q3","title":"配方完成","desc":"三款分齡定版"},
+    {"q":"2025 Q4","title":"首批試點","desc":"3–5 台上線"},
+    {"q":"2026 Q1","title":"北部擴點","desc":"便利商店聯名洽談"}
+  ],
+  "deck":"deck/purrgo_pitch.pdf"
+}
