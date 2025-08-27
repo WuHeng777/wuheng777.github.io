@@ -338,27 +338,30 @@ POST /api/partners         // 合作洽談
   }
 </script>
 <script>
-  // 讀 URL ?mode=investor
+  // 1) 讀 URL 參數，判斷是否為投資人模式
   const isInvestor = new URL(location.href).searchParams.get('mode') === 'investor';
 
-  // 讓右上角顯示切換按鈕
+  // 2) 導覽列加「模式切換」按鈕
   function renderModeSwitch(){
     const tabs = document.getElementById('tabs');
+    if(!tabs) return;
     const btn = document.createElement('a');
     btn.className = 'tab';
     btn.href = isInvestor ? '#/home' : location.pathname + '?mode=investor#' + (location.hash.replace('#/','')||'home');
     btn.textContent = isInvestor ? '返回使用者模式' : '投資人模式';
     tabs.appendChild(btn);
   }
+  window.addEventListener('DOMContentLoaded', renderModeSwitch);
 
-  // 投資人面板（讀 /data/kpis.json）
+  // 3) 讀取投資人面板資料
   async function fetchKPIs(){
     try{
-      const res = await fetch('/data/kpis.json');
+      const res = await fetch('/data/kpis.json', {cache:'no-cache'});
       return await res.json();
     }catch(e){ return null; }
   }
 
+  // 4) 渲染投資人面板（附 Pitch Deck 下載）
   async function renderInvestorPanel(root){
     const k = await fetchKPIs();
     if(!k){ root.innerHTML += '<section class="card">投資人面板：資料載入失敗</section>'; return; }
@@ -373,7 +376,7 @@ POST /api/partners         // 合作洽談
         </div>
         <div class="grid g-2" style="margin-top:12px">
           <div class="card">
-            <h3 style="margin-top:0">單店模型（Demo）</h3>
+            <h3 class="mt-0">單店模型（Demo）</h3>
             <ul class="list">
               <li>CapEx：${k.unit_econ.capex}</li>
               <li>毛利率：${k.unit_econ.gross_margin}</li>
@@ -381,7 +384,7 @@ POST /api/partners         // 合作洽談
             </ul>
           </div>
           <div class="card">
-            <h3 style="margin-top:0">Milestones</h3>
+            <h3 class="mt-0">Milestones</h3>
             <ul class="list">
               ${k.milestones.map(m=>`<li><b>${m.q}</b> — ${m.title}｜${m.desc}</li>`).join('')}
             </ul>
@@ -391,19 +394,15 @@ POST /api/partners         // 合作洽談
           <a class="btn" href="/${k.deck}" target="_blank" rel="noopener">下載 Pitch Deck（PDF）</a>
           <a class="btn secondary" href="#/partners">預約投資/合作洽談</a>
         </div>
-      </section>
-    `;
+      </section>`;
   }
 
-  // 首頁渲染時若是投資人模式，插入面板
+  // 5) 首頁渲染後，如為投資人模式就插入面板
   const _renderHome = renderHome;
   renderHome = async function(root){
     _renderHome(root);
     if(isInvestor){ await renderInvestorPanel(root); }
   }
-
-  // 啟動時加上模式切換鈕
-  window.addEventListener('DOMContentLoaded', renderModeSwitch);
 </script>
 </body>
 </html>
