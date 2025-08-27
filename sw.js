@@ -1,6 +1,6 @@
 const CACHE = 'purrgo-v2';
 const ASSETS = [
-  '/', '/index.html', '/manifest.webmanifest',
+  '/', '/index.html', '/manifest.webmanifest','/data/kpis.json',
   '/logo/logo-192.png', '/logo/logo-512.png', '/logo/favicon.png'
 ];
 
