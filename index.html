@@ -336,5 +336,73 @@ POST /api/partners         // 合作洽談
     });
   }
 </script>
+<script>
+  // 讀 URL ?mode=investor
+  const isInvestor = new URL(location.href).searchParams.get('mode') === 'investor';
+
+  // 讓右上角顯示切換按鈕
+  function renderModeSwitch(){
+    const tabs = document.getElementById('tabs');
+    const btn = document.createElement('a');
+    btn.className = 'tab';
+    btn.href = isInvestor ? '#/home' : location.pathname + '?mode=investor#' + (location.hash.replace('#/','')||'home');
+    btn.textContent = isInvestor ? '返回使用者模式' : '投資人模式';
+    tabs.appendChild(btn);
+  }
+
+  // 投資人面板（讀 /data/kpis.json）
+  async function fetchKPIs(){
+    try{
+      const res = await fetch('/data/kpis.json');
+      return await res.json();
+    }catch(e){ return null; }
+  }
+
+  async function renderInvestorPanel(root){
+    const k = await fetchKPIs();
+    if(!k){ root.innerHTML += '<section class="card">投資人面板：資料載入失敗</section>'; return; }
+    root.innerHTML += `
+      <section class="card">
+        <span class="pill">Investors</span>
+        <h2 style="margin:.2em 0">商業模式 & KPI</h2>
+        <div class="kpi">
+          <div class="item"><div class="muted">TAM</div><div style="font-weight:900;font-size:22px">${k.TAM}</div></div>
+          <div class="item"><div class="muted">轉換率</div><div style="font-weight:900;font-size:22px">${k.conversion}</div></div>
+          <div class="item"><div class="muted">平均回購</div><div style="font-weight:900;font-size:22px">${k.repeat_days}</div></div>
+        </div>
+        <div class="grid g-2" style="margin-top:12px">
+          <div class="card">
+            <h3 style="margin-top:0">單店模型（Demo）</h3>
+            <ul class="list">
+              <li>CapEx：${k.unit_econ.capex}</li>
+              <li>毛利率：${k.unit_econ.gross_margin}</li>
+              <li>回本期：${k.unit_econ.payback}</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3 style="margin-top:0">Milestones</h3>
+            <ul class="list">
+              ${k.milestones.map(m=>`<li><b>${m.q}</b> — ${m.title}｜${m.desc}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        <div class="inline" style="margin-top:10px">
+          <a class="btn" href="/${k.deck}" target="_blank" rel="noopener">下載 Pitch Deck（PDF）</a>
+          <a class="btn secondary" href="#/partners">預約投資/合作洽談</a>
+        </div>
+      </section>
+    `;
+  }
+
+  // 首頁渲染時若是投資人模式，插入面板
+  const _renderHome = renderHome;
+  renderHome = async function(root){
+    _renderHome(root);
+    if(isInvestor){ await renderInvestorPanel(root); }
+  }
+
+  // 啟動時加上模式切換鈕
+  window.addEventListener('DOMContentLoaded', renderModeSwitch);
+</script>
 </body>
 </html>
